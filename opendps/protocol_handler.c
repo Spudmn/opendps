@@ -382,18 +382,9 @@ static void handle_frame(uint8_t *frame, uint32_t length)
 
 
 
-
-
-
-
-
-
-
-
-
-
 size_t SCPI_Write(scpi_t * context, const char * data, size_t len) {
     (void) context;
+    send_frame(data, len);
 //    dbg_printf("SCPI_Write\n");
     return fwrite(data, 1, len, stdout);
 }
@@ -428,6 +419,42 @@ scpi_result_t SCPI_Reset(scpi_t * context) {
     dbg_printf(stderr, "**Reset\r\n");
     return SCPI_RES_OK;
 }
+
+
+
+
+
+static scpi_result_t DPS_Output_Enable(scpi_t * context) {
+
+  scpi_bool_t param1;
+  dbg_printf("TEST:BOOL\r\n"); /* debug command name */
+
+/* read first parameter if present */
+if (!SCPI_ParamBool(context, &param1, TRUE)) {
+    return SCPI_RES_ERR;
+}
+
+
+if (opendps_enable_output(param1))
+{
+  dbg_printf("OK");
+
+} else {
+  dbg_printf(" cmd_failed");
+}
+
+
+
+dbg_printf("\tP1=%d\r\n", param1);
+
+
+return SCPI_RES_OK;
+}
+
+
+
+
+
 
 const scpi_command_t scpi_commands[] = {
     /* IEEE Mandated Commands (SCPI std V1999.0 4.1.1) */
@@ -483,6 +510,8 @@ const scpi_command_t scpi_commands[] = {
 //    {.pattern = "TEST:TEXT", .callback = TEST_Text,},
 //    {.pattern = "TEST:ARBitrary?", .callback = TEST_ArbQ,},
 //    {.pattern = "TEST:CHANnellist", .callback = TEST_Chanlst,},
+
+    {.pattern = "OUTPut:STATe", .callback = DPS_Output_Enable,},
 
     SCPI_CMD_LIST_END
 };

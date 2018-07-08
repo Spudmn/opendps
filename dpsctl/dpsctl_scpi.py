@@ -161,14 +161,25 @@ class udp_interface(comm_interface):
     def read(self):
         reply = bytearray()
         try:
-            d = self._socket.recvfrom(1000)
-            reply = bytearray(d[0])
-            addr = d[1]
+            Complete = False
+            while not Complete:     # Wait here untill we get a LF (0x0a) and build up the message.
+                d = self._socket.recvfrom(1000)
+                for chars in d[0]:
+                    reply.append(chars)
+                    if ord(chars) == 0x0a:
+                        Complete=True
+
+                _addr = d[1]
         except socket.timeout:
-            pass
+            reply = bytearray()
+            print "Timeout"
+            return reply  #return empty
         except socket.error:
-            pass
+            reply = bytearray()
+            print "socket.error"
+            return reply  #return empty
         return reply
+    
 
 """
 Print error message and exit with error
@@ -335,6 +346,7 @@ Communicate with the DPS device according to the user's whishes
 def communicate(comms, frame, args):
     bytes = frame
 
+
     if not comms:
         fail("no communication interface specified")
     if not comms.open():
@@ -352,12 +364,13 @@ def communicate(comms, frame, args):
     if not comms.close:
         print("Warning: could not close %s" % (comms.name()))
 
-    f = uFrame()
-    res = f.set_frame(resp)
-    if res < 0:
-        fail("protocol error (%d)" % (res))
-    else:
-        return handle_response(frame.get_frame()[1], f, args)
+    
+    print resp
+    return
+#     return handle_response(frame.get_frame()[1], f, args)  todo put back reply decoding
+    
+    
+    
 
 """
 Communicate with the DPS device according to the user's whishes

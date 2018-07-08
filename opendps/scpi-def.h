@@ -8,7 +8,7 @@
 #define SCPI_IDN1 "OpenDPS"  //Manufacturer
 #define SCPI_IDN2 "DPS5005"  //Model number
 #define SCPI_IDN3 NULL      //Serial number
-#define SCPI_IDN4 "0.01"    //Firmware revision number
+#define SCPI_IDN4 "FW0.02"    //Firmware revision number
 
 extern const scpi_command_t scpi_commands[];
 extern scpi_interface_t scpi_interface;

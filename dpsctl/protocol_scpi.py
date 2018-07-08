@@ -99,12 +99,14 @@ def create_set_function(name):
     return f
 
 def create_enable_output(activate):
-    f = uFrame()
-    f.pack8(cmd_enable_output)
-    f.pack8(1 if activate == "on" else 0)
-    f.end()
-    return f
+    if activate == "on":
+        return "OUTPut:STATe 1\r\n"
+    if activate == "off":
+        return "OUTPut:STATe 0\r\n"
 
+    print "Invalid pram"
+    
+    
 def create_set_parameter(parameter_list):
     f = uFrame()
     f.pack8(cmd_set_parameters)
