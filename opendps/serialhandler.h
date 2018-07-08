@@ -25,6 +25,7 @@
 #ifndef __SERIALHANDER_H__
 #define __SERIALHANDER_H__
 
+void Init_Protocol_handler(void);
 void serial_handle_rx_char(char c);
 
 #endif // __SERIALHANDER_H__

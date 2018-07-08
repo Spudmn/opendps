@@ -616,7 +616,7 @@ static void event_handler(void)
             ui_tick();
         } else {
             if (event) {
-                emu_printf(" Event %d 0x%02x\n", event, data);
+                emu_printf(" Event %d 0x%02x %c\n", event, data,data);
             }
             switch(event) {
                 case event_none:
@@ -643,6 +643,7 @@ int main(int argc, char const *argv[])
 {
     hw_init();
     pwrctl_init(); // Must be after DAC init
+    Init_Protocol_handler();
     event_init();
 
 #ifdef CONFIG_COMMANDLINE
