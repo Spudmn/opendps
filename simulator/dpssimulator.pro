@@ -23,6 +23,7 @@ DEFINES += "DPS5005"
 DEFINES += "DPS_EMULATOR"
 DEFINES += "HAVE_STDBOOL"
 DEFINES += "HAVE_STRUCT_TIMESPEC"
+DEFINES += COLORSPACE=1
 
 #todo remove these later
 DEFINES += "CONFIG_DEFAULT_VOUT=5000"
@@ -44,16 +45,18 @@ SOURCES += main.cpp\
     opendps_sim.c \
     tick.c \
     mock/systick_mock.c \
-    
-    
-    #ili9163c.c \
+    ../opendps/tft.c \
+    ../opendps/ili9163c.c \
+    mock/gpio_mock.c \
+    ../opendps/font-0.c \
+    ../opendps/font-1.c \   
+    #
     #opendps_sim.c \
-    #mock/gpio_mock.c \
+    #
     #spi_driver.c \
     #
-    #tft.c \
-    #../opendps/font-0.c \
-    #../opendps/font-1.c \
+    #
+
     #../opendps/event.c \
     #ringbuf.c \
     #pwrctl.c \
@@ -84,6 +87,12 @@ HEADERS  += mainwindow.h \
     ../opendps/event.h \
     opendps_sim.h \
     mock/systick.h \
+    mock/rcc.h \
+    mock/timer.h \
+    mock/adc.h \
+    mock/exti.h \
+    mock/usart.h \
+    mock/dac.h \
     
     
     #../opendps/ili9163c.h \
@@ -103,16 +112,16 @@ HEADERS  += mainwindow.h \
     #../opendps/wifi.h \
    
     #ringbuf.h \
-    #mock/dac.h \
+    #
     #pwrctl.h \
     #../opendps/past.h \
     #mock/nvic.h \
     #../opendps/serialhandler.h \
-    #mock/adc.h \
-    #mock/exti.h \
-    #mock/rcc.h \
-    #mock/timer.h \
-    #mock/usart.h \
+    #
+    #
+    #
+    #
+    #
     #../opendps/dbg_printf.h \
     #../opendps/protocol.h \
    	#../opendps/crc16.c \

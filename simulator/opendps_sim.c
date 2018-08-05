@@ -47,9 +47,9 @@ int main(int argc, char const *argv[])
 //    dbg_printf("Try 'help;' for, well, help (note the semicolon).\n");
 //#endif // CONFIG_COMMANDLINE
 //
-//    tft_init();
-//    delay_ms(50); // Without this delay we will observe some flickering
-//    tft_clear();
+    tft_init();
+    delay_ms(50); // Without this delay we will observe some flickering
+    tft_clear();
 //#ifdef DPS_EMULATOR
 //    dps_emul_init(&g_past, argc, argv);
 //#else // DPS_EMULATOR
@@ -58,7 +58,8 @@ int main(int argc, char const *argv[])
 //    g_past.blocks[0] = 0x0800f800;
 //    g_past.blocks[1] = 0x0800fc00;
 //#endif // DPS_EMULATOR
-//    if (!past_init(&g_past)) {
+//    if (!past_init(&g_past)) {make -f Makefile.Debug
+
 //        dbg_printf("Error: past init failed!\n");
 //        /** @todo Handle past init failure */
 //    }
@@ -85,5 +86,10 @@ int main(int argc, char const *argv[])
 //    tft_clear();
 //#endif // CONFIG_SPLASH_SCREEN
 //  //  event_handler();
+
+
+    tft_fill(1,1,30,30,0xFFE0);
+
+
     return 0;
 }

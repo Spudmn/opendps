@@ -54,6 +54,10 @@ extern "C" {
 #include "event.h"
 #include "opendps_sim.h"
 #include "tick.h"
+#include "mock/gpio.h"
+#include "hw.h"
+#include "ili9163c_settings.h"
+#include "ili9163c_registers.h"
 
 }
 
@@ -132,6 +136,7 @@ void MainWindow::SysTick_Timeout()
 ui->widget->update();
 }
 
+///////////////////////////////////////////////////////////////////////////////////
 
 bool event_put(event_t event, uint8_t data)//todo remove place holder
 {
@@ -144,6 +149,184 @@ void mainwindow_processEvents()
  QCoreApplication::processEvents();
 }
 
+
+//A0 = 0 Command Mode
+//A0 = 1 Dispaly Mode
+
+bool A0_Pin = FALSE;
+
+void mainwindow_gpio_set (uint32_t gpioport, uint8_t gpios)
+{
+    if ((gpioport == TFT_A0_PORT) && (gpios == TFT_A0_PIN))
+    {
+        A0_Pin = TRUE;
+    }
+}
+
+void mainwindow_gpio_clear (uint32_t gpioport, uint8_t gpios)
+{
+    if ((gpioport == TFT_A0_PORT) && (gpios == TFT_A0_PIN))
+    {
+        A0_Pin = FALSE;
+    }
+}
+
+void mainwindow_SaveRam(uint8_t *tx_buf, uint32_t tx_len)
+{
+    while(tx_len)
+    {
+        uint16_t color = ((uint16_t)tx_buf[0] << 8) + tx_buf[1];
+
+        uint32_t Red = ((color&0xf800)>>8) | 0x07 ;
+        uint32_t Green =  ((color&0x07E0) >> 3) | 0x03;
+        uint32_t Blue = ((color & 0x1F) << 3) | 0x07;
+
+        uint32_t RGB = Red << 16;
+        RGB |= Green << 8;
+        RGB |= Blue << 0;
+
+
+        if ((fui->widget->Pos_X >= _TFTWIDTH) || (fui->widget->Pos_Y >= _TFTHEIGHT))
+        {
+        	qDebug() << "SaveRam overflow";
+            //fui->eb_Debug->appendPlainText("Over Flow" );
+        }
+        else
+        {
+            fui->widget->PixBuff[fui->widget->Pos_X][fui->widget->Pos_Y] = RGB;
+        }
+
+        fui->widget->Pos_X++;
+        if (fui->widget->Pos_X > fui->widget->Limit_X1)
+        {
+            fui->widget->Pos_X = fui->widget->Limit_X0;
+
+            fui->widget->Pos_Y++;
+            if (fui->widget->Pos_Y > fui->widget->Limit_Y1)
+            {//back to start
+                fui->widget->Pos_Y = fui->widget->Limit_Y0;
+            }
+
+        }
+        tx_buf +=2;
+        tx_len -=2;
+    }
+}
+
+
+bool mainwindow_spi_dma_transceive(uint8_t *tx_buf, uint32_t tx_len, uint8_t *rx_buf, uint32_t rx_len)
+{
+    (void) rx_buf;
+    (void) rx_len;
+
+    static uint8_t Last_CMD;
+    static uint32_t Param_Index;
+
+    int32_t Count = (int32_t)tx_len;
+
+
+//    while(Count > 0)
+    {
+        if (A0_Pin)
+        {//Display
+//            QString sNum;
+//            sNum.sprintf("%02X", Last_CMD);
+//            fui->eb_Debug->appendPlainText("Last CMD: "+ sNum +   " Tx Len: "  + QString::number(tx_len) + " Rx Len: " + QString::number(rx_len) );
+
+
+            if (Last_CMD == CMD_CLMADRS)
+            {
+
+                if (Param_Index == 0)
+                {
+                    fui->widget->Limit_X0 = ((uint16_t)tx_buf[0] << 8) + tx_buf[1];
+                }
+                else if (Param_Index == 1)
+                {
+                    fui->widget->Limit_X1 = ((uint16_t)tx_buf[0] << 8) + tx_buf[1];
+                    //                fui->eb_Debug->appendPlainText("Col Add: "+ QString::number(fui->widget->Limit_X0) + " " + QString::number(fui->widget->Limit_X1) );
+                }
+                else
+                {
+                    fui->eb_Debug->appendPlainText("opps");
+                }
+
+                Param_Index++;
+
+            }
+            if (Last_CMD == CMD_PGEADRS)
+            {
+
+                if (Param_Index == 0)
+                {
+                    fui->widget->Limit_Y0 = ((uint16_t)tx_buf[0] << 8) + tx_buf[1];
+                }
+                else if (Param_Index == 1)
+                {
+                    fui->widget->Limit_Y1 = ((uint16_t)tx_buf[0] << 8) + tx_buf[1];
+                    //            fui->eb_Debug->appendPlainText("Page Add: "+ QString::number(fui->widget->Limit_Y2) + " " + QString::number(fui->widget->Limit_Y2) );
+                }
+                else
+                {
+                    fui->eb_Debug->appendPlainText("opps");
+                }
+                Param_Index++;
+            }
+
+            if (Last_CMD == CMD_RAMWR)
+            {
+                if (Param_Index == 0)
+                {
+//                    fui->eb_Debug->appendPlainText("X0: "+ QString::number(fui->widget->Limit_X0) + " X1: " + QString::number(fui->widget->Limit_X1) +" Y0: "+ QString::number(fui->widget->Limit_Y0) + " Y1: " + QString::number(fui->widget->Limit_Y1) + " Count: " + QString::number(tx_len) );
+//                    fui->eb_Debug->appendPlainText("RAM: "  + QString::number(tx_buf[0]) + " " + QString::number(tx_buf[1]) + " " + QString::number(tx_buf[2]) + " " + " " + QString::number(tx_buf[3]) + " " );
+
+                    fui->widget->Pos_X =  fui->widget->Limit_X0;
+                    fui->widget->Pos_Y =  fui->widget->Limit_Y0;
+
+                    mainwindow_SaveRam(tx_buf,tx_len);
+                }
+                else
+                {
+//                    fui->eb_Debug->appendPlainText("X: "+ QString::number(fui->widget->Pos_X) +" Y: "+ QString::number(fui->widget->Pos_Y) + " Count: " + QString::number(tx_len) );
+                	mainwindow_SaveRam(tx_buf,tx_len);
+                }
+
+                Param_Index ++;
+                //            fui->eb_Debug->appendPlainText("Param_Index: "+ QString::number(Param_Index) );
+
+            }
+
+            Count -= 2;
+        }
+        else
+        {//Command
+            Last_CMD = *tx_buf;
+
+            if (Last_CMD == CMD_CLMADRS)
+            {
+                Param_Index = 0;
+            }
+            if (Last_CMD == CMD_PGEADRS)
+            {
+                Param_Index = 0;
+            }
+            if (Last_CMD == CMD_RAMWR)
+            {
+
+                Param_Index = 0;
+            }
+            Count--;
+
+        }
+
+    }
+
+    return TRUE;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
 
 
 MainWindow::MainWindow(QWidget *parent) :
