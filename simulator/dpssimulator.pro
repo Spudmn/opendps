@@ -42,12 +42,15 @@ SOURCES += main.cpp\
     ili9163c_widget.cpp \
     esp8266_emu.c \
     opendps_sim.c \
+    tick.c \
+    mock/systick_mock.c \
+    
     
     #ili9163c.c \
     #opendps_sim.c \
     #mock/gpio_mock.c \
     #spi_driver.c \
-    #tick.c \
+    #
     #tft.c \
     #../opendps/font-0.c \
     #../opendps/font-1.c \
@@ -56,7 +59,7 @@ SOURCES += main.cpp\
     #pwrctl.c \
     #mock/dac_mock.c \
     #../opendps/past.c \
-    #mock/systick_mock.c \
+    #
     #hw.c \
     #../opendps/protocol_handler.c \
     #../opendps/protocol.c \
@@ -80,6 +83,9 @@ HEADERS  += mainwindow.h \
     esp8266_emu.h \
     ../opendps/event.h \
     opendps_sim.h \
+    mock/systick.h \
+    
+    
     #../opendps/ili9163c.h \
     #../opendps/ili9163c_registers.h \
     #ili9163c_settings.h \
@@ -90,7 +96,7 @@ HEADERS  += mainwindow.h \
     #../opendps/tft.h \
     #../opendps/font-0.h \
     #../opendps/font-1.h \
-    #mock/systick.h \
+    #
     #../opendps/logo.h \
     #../opendps/padlock.h \
     #../opendps/power.h \

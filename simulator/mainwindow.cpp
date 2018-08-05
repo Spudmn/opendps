@@ -48,9 +48,12 @@ extern "C" {
   #include <arpa/inet.h>
 #endif
 
+#include "mock/systick.h"
+
 #include "esp8266_emu.h"
 #include "event.h"
 #include "opendps_sim.h"
+#include "tick.h"
 
 }
 
@@ -120,11 +123,27 @@ void MainWindow::on_Dial_Load(int iValue)
 }
 
 
+void MainWindow::SysTick_Timeout()
+{
+    for (int i = 0; i < 10; ++i) {
+    sys_tick_handler();
+    }
+
+ui->widget->update();
+}
+
 
 bool event_put(event_t event, uint8_t data)//todo remove place holder
 {
 	return true;
 }
+
+
+void mainwindow_processEvents()
+{
+ QCoreApplication::processEvents();
+}
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -156,6 +175,11 @@ MainWindow::MainWindow(QWidget *parent) :
   	connect(ui->dial, SIGNAL(Decrement()), this,SLOT(dial_decrementer()));
   	connect(ui->dial, SIGNAL (Double_Click()), this, SLOT (On_dial_Double_Click()));
 
+
+  	//Timer
+    timer_SysTick = new QTimer(this);
+    connect(timer_SysTick, SIGNAL(timeout()), this, SLOT(SysTick_Timeout()));
+    timer_SysTick->start(10);
 
   	//rebuilds the command line args to pass onto the simulator main
     const QStringList args = QCoreApplication::arguments();
