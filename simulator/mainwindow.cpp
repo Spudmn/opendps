@@ -58,6 +58,7 @@ extern "C" {
 #include "hw.h"
 #include "ili9163c_settings.h"
 #include "ili9163c_registers.h"
+#include "flash.h"
 
 }
 
@@ -321,6 +322,41 @@ bool mainwindow_spi_dma_transceive(uint8_t *tx_buf, uint32_t tx_len, uint8_t *rx
     return TRUE;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief      Emulator init
+ *
+ * @param[in]  past       pointer to the past
+ * @param[in]  argc argv  program argument
+ */
+
+void dps_emul_init(past_t *past, int argc, char const *argv[])
+{
+  printf("OpenDPS Simulator\n");
+
+    size_t optind;
+    char *file_name = 0;
+    bool write_past = false;
+    for (optind = 1; optind < (unsigned)argc; optind++) {
+        switch (argv[optind][1]) {
+          case 'p':
+            file_name = (char*) argv[optind+1];
+            optind++;
+            break;
+          case 'w':
+          write_past = true;
+            break;
+          default:
+              fprintf(stderr, "Usage: %s [-p past.bin] [-w]\n", argv[0]);
+              exit(EXIT_FAILURE);
+        }
+    }
+
+  flash_emul_init(past, file_name, write_past);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////

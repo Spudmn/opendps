@@ -30,6 +30,9 @@
 #include "ili9163c.h"
 #include "font-0.h"
 #include "font-1.h"
+#include "past.h"
+#include "pastunits.h"
+
 
 #include "logo.h"
 
@@ -87,15 +90,67 @@ static bool is_enabled;
 /** Last settings written to past */
 static bool     last_tft_inv_setting;
 
-///** Our parameter storage */
-//static past_t g_past = {
-//    .blocks = {0x0800f800, 0x0800fc00}
-//};
+/** Our parameter storage */
+static past_t g_past = {
+    .blocks = {0x0800f800, 0x0800fc00}
+};
 
-///** The function UI displaying the current active function */
+/** The function UI displaying the current active function */
 //static uui_t func_ui;
-///** The main UI displaying input voltage and such */
+/** The main UI displaying input voltage and such */
 //static uui_t main_ui;
+
+
+
+/**
+  * @brief Check if user wants master reset, resetting the past area
+  * @retval none
+  */
+static void check_master_reset(void)
+{
+    if (hw_sel_button_pressed()) {
+        dbg_printf("Master reset\n");
+        if (!past_format(&g_past)) {
+            /** @todo Handle past format errors */
+            dbg_printf("Error: past formatting failed!\n");
+        }
+    }
+}
+
+
+
+
+/**
+  * @brief Read settings from past
+  * @retval none
+  */
+static void read_past_settings(void)
+{
+    bool     inverse_setting = false;
+    uint32_t length;
+    uint32_t *p = 0;
+    if (past_read_unit(&g_past, past_tft_inversion, (const void**) &p, &length)) {
+        if (p) {
+            inverse_setting = !!(*p);
+        }
+    }
+    tft_invert(inverse_setting);
+
+#ifdef GIT_VERSION
+    /** Update app git hash in past if needed */
+    char *ver = 0;
+    bool exists = past_read_unit(&g_past, past_app_git_hash, (const void**) &ver, &length);
+    if (!exists || strncmp((char*) ver, GIT_VERSION, 32 /* probably never longer than 32 bytes */) != 0) {
+        if (!past_write_unit(&g_past, past_app_git_hash, (void*) &GIT_VERSION, strlen(GIT_VERSION))) {
+            /** @todo Handle past write errors */
+            dbg_printf("Error: past write app git hash failed!\n");
+        }
+    }
+#endif // GIT_VERSION
+}
+
+
+
 
 
 
@@ -126,8 +181,6 @@ static void ui_init(void)
 }
 
 
-
-#define CONFIG_SPLASH_SCREEN
 
 #ifdef CONFIG_SPLASH_SCREEN
 /**
@@ -164,22 +217,22 @@ int main(int argc, char const *argv[])
     tft_init();
     delay_ms(50); // Without this delay we will observe some flickering
     tft_clear();
-//#ifdef DPS_EMULATOR
-//    dps_emul_init(&g_past, argc, argv);
-//#else // DPS_EMULATOR
-//    (void) argc;
-//    (void) argv;
-//    g_past.blocks[0] = 0x0800f800;
-//    g_past.blocks[1] = 0x0800fc00;
-//#endif // DPS_EMULATOR
-//    if (!past_init(&g_past)) {make -f Makefile.Debug
+#ifdef DPS_EMULATOR
+    dps_emul_init(&g_past, argc, argv);
+#else // DPS_EMULATOR
+    (void) argc;
+    (void) argv;
+    g_past.blocks[0] = 0x0800f800;
+    g_past.blocks[1] = 0x0800fc00;
+#endif // DPS_EMULATOR
+    if (!past_init(&g_past)) {
 
-//        dbg_printf("Error: past init failed!\n");
-//        /** @todo Handle past init failure */
-//    }
-//
-//    check_master_reset();
-//    read_past_settings();
+        dbg_printf("Error: past init failed!\n");
+        /** @todo Handle past init failure */
+    }
+
+    check_master_reset();
+    read_past_settings();
     ui_init();
 //
 //#ifdef CONFIG_WIFI
@@ -196,8 +249,8 @@ int main(int argc, char const *argv[])
 #ifdef CONFIG_SPLASH_SCREEN
     ui_draw_splash_screen();
     hw_enable_backlight();
-//    delay_ms(750);
-//    tft_clear();
+    delay_ms(750);
+    tft_clear();
 #endif // CONFIG_SPLASH_SCREEN
 //  //  event_handler();
 

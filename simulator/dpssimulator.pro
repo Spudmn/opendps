@@ -53,6 +53,8 @@ SOURCES += main.cpp\
     hw.c \
     pwrctl.c \
     mock/dac_mock.c \
+    flash.c \ 
+    ../opendps/past.c \
     
     #opendps_sim.c \
     #
@@ -64,7 +66,7 @@ SOURCES += main.cpp\
     #ringbuf.c \
     #
     #
-    #../opendps/past.c \
+    #
     #
     #
     #../opendps/protocol_handler.c \
@@ -79,7 +81,7 @@ SOURCES += main.cpp\
 	#../opendps/scpi_sour.c \
 	#../opendps/scpi_meas.c \
 	#../opendps/scpi_params.c \
-	#flash.c \ 
+	#
 	
 	
 
@@ -96,7 +98,7 @@ HEADERS  += mainwindow.h \
     mock/exti.h \
     mock/usart.h \
     mock/dac.h \
-    
+    flash.h \
     
     #../opendps/ili9163c.h \
     #../opendps/ili9163c_registers.h \
@@ -132,7 +134,7 @@ HEADERS  += mainwindow.h \
    	#../opendps/func_cv.h \
    	#../opendps/uframe.h \
    	#../opendps/simulator.h \
-   	#flash.h \
+   	#
 	
 	
     

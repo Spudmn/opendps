@@ -8,8 +8,10 @@
 #ifndef SIMULATOR_OPENDPS_SIM_H_
 #define SIMULATOR_OPENDPS_SIM_H_
 
-
+#include "past.h"
 
 int sim_main(int argc, char const *argv[]);
+void dps_emul_init(past_t *past, int argc, char const *argv[]);
+
 
 #endif /* SIMULATOR_OPENDPS_SIM_H_ */
