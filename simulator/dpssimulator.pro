@@ -50,7 +50,10 @@ SOURCES += main.cpp\
     mock/gpio_mock.c \
     ../opendps/font-0.c \
     ../opendps/font-1.c \   
-    #
+    hw.c \
+    pwrctl.c \
+    mock/dac_mock.c \
+    
     #opendps_sim.c \
     #
     #spi_driver.c \
@@ -59,11 +62,11 @@ SOURCES += main.cpp\
 
     #../opendps/event.c \
     #ringbuf.c \
-    #pwrctl.c \
-    #mock/dac_mock.c \
+    #
+    #
     #../opendps/past.c \
     #
-    #hw.c \
+    #
     #../opendps/protocol_handler.c \
     #../opendps/protocol.c \
     #../opendps/crc16.c \

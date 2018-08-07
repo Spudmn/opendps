@@ -292,7 +292,7 @@ bool mainwindow_spi_dma_transceive(uint8_t *tx_buf, uint32_t tx_len, uint8_t *rx
                 }
 
                 Param_Index ++;
-                //            fui->eb_Debug->appendPlainText("Param_Index: "+ QString::number(Param_Index) );
+                //fui->eb_Debug->appendPlainText("Param_Index: "+ QString::number(Param_Index) );
 
             }
 
@@ -316,11 +316,8 @@ bool mainwindow_spi_dma_transceive(uint8_t *tx_buf, uint32_t tx_len, uint8_t *rx
                 Param_Index = 0;
             }
             Count--;
-
         }
-
     }
-
     return TRUE;
 }
 

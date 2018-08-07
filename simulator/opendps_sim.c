@@ -26,6 +26,120 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "tft.h"
+#include "ili9163c.h"
+#include "font-0.h"
+#include "font-1.h"
+
+#include "logo.h"
+
+
+#define TFT_HEIGHT  (128)
+#define TFT_WIDTH   (128)
+
+/** How ofter we update the measurements in the UI (ms) */
+#define UI_UPDATE_INTERVAL_MS  (250)
+
+/** Timeout for waiting for wifi connction (ms) */
+#define WIFI_CONNECT_TIMEOUT  (10000)
+
+/** Blit positions */
+#define XPOS_WIFI     (4)
+#define XPOS_LOCK    (30)
+
+/** Constants describing how certain things on the screen flash when needed */
+#define WIFI_CONNECTING_FLASHING_PERIOD  (1000)
+#define WIFI_ERROR_FLASHING_PERIOD        (500)
+#define WIFI_UPGRADING_FLASHING_PERIOD    (250)
+#define LOCK_FLASHING_PERIOD              (250)
+#define LOCK_FLASHING_COUNTER               (4)
+#define TFT_FLASHING_PERIOD               (100)
+#define TFT_FLASHING_COUNTER                (2)
+
+static void ui_flash(void);
+static void read_past_settings(void);
+static void write_past_settings(void);
+static void check_master_reset(void);
+
+/** UI settings */
+static uint16_t bg_color;
+static uint32_t ui_width;
+static uint32_t ui_height;
+
+/** Used to make the screen flash */
+static uint32_t tft_flashing_period;
+static uint32_t tft_flash_counter;
+
+/** Used for flashing the wifi icon */
+static uint32_t wifi_status_flashing_period;
+static bool wifi_status_visible;
+
+/** Used for flashing the lock icon */
+static uint32_t lock_flashing_period;
+static bool lock_visible;
+static uint32_t lock_flash_counter;
+
+/** Current icon settings */
+//static wifi_status_t wifi_status;
+static bool is_locked;
+static bool is_enabled;
+
+/** Last settings written to past */
+static bool     last_tft_inv_setting;
+
+///** Our parameter storage */
+//static past_t g_past = {
+//    .blocks = {0x0800f800, 0x0800fc00}
+//};
+
+///** The function UI displaying the current active function */
+//static uui_t func_ui;
+///** The main UI displaying input voltage and such */
+//static uui_t main_ui;
+
+
+
+
+/**
+  * @brief Initialize the UI
+  * @retval none
+  */
+static void ui_init(void)
+{
+    bg_color = BLACK;
+    ui_width = TFT_WIDTH;
+    ui_height = TFT_HEIGHT;
+
+//    uui_init(&func_ui, &g_past);
+//    func_cv_init(&func_ui);
+#ifdef CONFIG_CC_ENABLE
+    func_cc_init(&func_ui);
+#endif // CONFIG_CC_ENABLE
+//    uui_activate(&func_ui);
+
+//    uui_init(&main_ui, &g_past);
+//    number_init(&input_voltage);
+//    input_voltage.ui.x = 105;
+//    input_voltage.ui.y = ui_height - font_0_height;
+//    uui_add_screen(&main_ui, &main_screen);
+//    uui_activate(&main_ui);
+}
+
+
+
+#define CONFIG_SPLASH_SCREEN
+
+#ifdef CONFIG_SPLASH_SCREEN
+/**
+  * @brief Draw splash screen
+  * @retval none
+  */
+static void ui_draw_splash_screen(void)
+{
+    tft_blit((uint16_t*) logo, logo_width, logo_height, (ui_width-logo_width)/2, (ui_height-logo_height)/2);
+}
+#endif // CONFIG_SPLASH_SCREEN
+
 
 /**
   * @brief Ye olde main
@@ -37,8 +151,8 @@ int sim_main(int argc, char const *argv[])
 int main(int argc, char const *argv[])
 #endif // DPS_EMULATOR
 {
-//    hw_init();
-//    pwrctl_init(); // Must be after DAC init
+    hw_init();
+    pwrctl_init(); // Must be after DAC init
 //    Init_Protocol_handler();
 //    event_init();
 //
@@ -66,7 +180,7 @@ int main(int argc, char const *argv[])
 //
 //    check_master_reset();
 //    read_past_settings();
-//    ui_init();
+    ui_init();
 //
 //#ifdef CONFIG_WIFI
 //    /** Rationale: the ESP8266 could send this message when it starts up but
@@ -79,16 +193,13 @@ int main(int argc, char const *argv[])
 //    opendps_update_wifi_status(wifi_connecting);
 //#endif // CONFIG_WIFI
 //
-//#ifdef CONFIG_SPLASH_SCREEN
-//    ui_draw_splash_screen();
-//    hw_enable_backlight();
+#ifdef CONFIG_SPLASH_SCREEN
+    ui_draw_splash_screen();
+    hw_enable_backlight();
 //    delay_ms(750);
 //    tft_clear();
-//#endif // CONFIG_SPLASH_SCREEN
+#endif // CONFIG_SPLASH_SCREEN
 //  //  event_handler();
-
-
-    tft_fill(1,1,30,30,0xFFE0);
 
 
     return 0;
