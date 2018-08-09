@@ -22,56 +22,62 @@
  * THE SOFTWARE.
  */
 
-#ifndef __EVENT_H__
-#define __EVENT_H__
+#include <stdint.h>
+#include <systick.h>
+#include <nvic.h>
+#include "tick.h"
 
-typedef enum {
-	event_none = 0,
-	event_button_m1,
-	event_button_m2,
-	event_button_sel,
-	event_button_enable,
-  event_rot_left,
-  event_rot_right,
-  event_rot_left_set,
-  event_rot_right_set,
-	event_rot_press,
-	event_uart_rx,
-	event_ocp
-} event_t;
-
-typedef enum {
-	press_short = 0,
-	press_long,
-} button_press_t;
+static volatile uint64_t tick_ms;
 
 
 /**
-  * @brief Initialize the event module
-  * @retval None
+  * @brief Initialize the systick module
+  * @retval none
   */
-void event_init(void);
+void systick_init(void)
+{
+    // 48MHz / 8 => 6000000 counts per second
+    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB_DIV8);
+
+    // 6000000/6000 = 1000 overflows per second - every 1ms one interrupt
+    // SysTick interrupt every N clock pulses: set reload to N-1
+    systick_set_reload(5999);
+
+    systick_interrupt_enable();
+    systick_counter_enable();
+}
 
 /**
-  * @brief Fetch next event in queue
-  * @param event the type of event received or 'event_none' if no events in queue
-  * @param data additional event data
-  * @retval true if an event was found
+  * @brief Busy wait for a given time
+  * @param delay time in milliseconds
+  * @retval none
   */
-bool event_get(event_t *event, uint8_t *data);
+
+void delay_ms(uint32_t delay)
+{
+    uint64_t start = tick_ms;
+    while (tick_ms < start + delay)
+    {
+    	mainwindow_processEvents();
+    }
+
+}
 
 /**
-  * @brief Place event in event fifo
-  * @param event event type
-  * @param data additional event data
-  * @retval None
+  * @brief Get systick
+  * @retval number of milliseconcs since powerup
   */
-bool event_put(event_t event, uint8_t data);
+uint64_t get_ticks(void)
+{
+    return tick_ms;
+}
 
 /**
-  * @brief Get the number of items in the event buffer
-  * @retval the number of items in the event buffer
+  * @brief STM32 systick handler
+  * @retval none
   */
-uint32_t event_get_count();
+void sys_tick_handler(void)
+{
+    tick_ms++;
+}
 
-#endif // __EVENT_H__
