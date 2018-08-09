@@ -77,3 +77,12 @@ bool event_put(event_t event, uint8_t data)
 {
 	return ringbuf_put(&events, (uint16_t) (event << 8 | data));
 }
+
+/**
+  * @brief Get the number of items in the event buffer
+  * @retval the number of items in the event buffer
+  */
+uint32_t event_get_count()
+{
+  return ringbuf_get_count(&events);
+}

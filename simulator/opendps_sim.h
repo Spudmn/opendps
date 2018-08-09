@@ -12,6 +12,7 @@
 
 int sim_main(int argc, char const *argv[]);
 void dps_emul_init(past_t *past, int argc, char const *argv[]);
+void sim_event_handler(void);
 
 
 #endif /* SIMULATOR_OPENDPS_SIM_H_ */

@@ -66,50 +66,50 @@ extern "C" {
 
 void MainWindow::On_Click_M1()
 {
-//    event_put(event_button_m1, press_short);
-//    on_timer_Event();
+    event_put(event_button_m1, press_short);
+    on_timer_Event();
 }
 
 void MainWindow::On_Click_M2()
 {
-//    event_put(event_button_m2, press_short);
-//    on_timer_Event();
+    event_put(event_button_m2, press_short);
+    on_timer_Event();
 }
 
 void MainWindow::On_Click_Set()
 {
-//    event_put(event_button_sel, press_short);
-//    on_timer_Event();
+    event_put(event_button_sel, press_short);
+    on_timer_Event();
 }
 
 
 
 void MainWindow::On_Click_On_Off()
 {
-//    event_put(event_button_enable, press_short);
-//    on_timer_Event();
+    event_put(event_button_enable, press_short);
+    on_timer_Event();
 }
 
 
 void MainWindow::dial_incrementer()
 {
   ui->eb_Debug->appendPlainText("up");
-//  event_put(event_rot_right, press_short);
-//  on_timer_Event();
+  event_put(event_rot_right, press_short);
+  on_timer_Event();
 }
 
 void MainWindow::dial_decrementer()
 {
   ui->eb_Debug->appendPlainText("down");
-//  event_put(event_rot_left, press_short);
-//  on_timer_Event();
+  event_put(event_rot_left, press_short);
+  on_timer_Event();
 }
 
 
 void MainWindow::On_dial_Double_Click()
 {
-//    event_put(event_rot_press, press_short);
-//    on_timer_Event();
+    event_put(event_rot_press, press_short);
+    on_timer_Event();
 }
 
 void MainWindow::on_Dial_V_In_Changed(int iValue)
@@ -137,12 +137,16 @@ void MainWindow::SysTick_Timeout()
 ui->widget->update();
 }
 
-///////////////////////////////////////////////////////////////////////////////////
 
-bool event_put(event_t event, uint8_t data)//todo remove place holder
+void MainWindow::on_timer_Event(void)
 {
-	return true;
+    timer_Event->stop();
+    sim_event_handler();
+    timer_Event->start(1);
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////
 
 
 void mainwindow_processEvents()
@@ -397,6 +401,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer_SysTick, SIGNAL(timeout()), this, SLOT(SysTick_Timeout()));
     timer_SysTick->start(10);
 
+    timer_Event = new QTimer(this);
+    connect(timer_Event, SIGNAL(timeout()), this, SLOT(on_timer_Event()));
+
+
+
   	//rebuilds the command line args to pass onto the simulator main
     const QStringList args = QCoreApplication::arguments();
     int m_argc = args.count();
@@ -413,6 +422,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     sim_main(m_argc,(const char **)m_argv);
+    ui->widget->update();
+
+
+    timer_Event->start(1);
 
 }
 

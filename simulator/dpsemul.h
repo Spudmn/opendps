@@ -1,7 +1,7 @@
 /* 
  * The MIT License (MIT)
  * 
- * Copyright (c) 2017 Johan Kanflo (github.com/kanflo)
+ * Copyright (c) 2018 Johan Kanflo (github.com/kanflo)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,56 +22,10 @@
  * THE SOFTWARE.
  */
 
-#ifndef __EVENT_H__
-#define __EVENT_H__
+#ifndef __DPSEMUL_H__
+#define __DPSEMUL_H__
+#include "past.h"
 
-typedef enum {
-	event_none = 0,
-	event_button_m1,
-	event_button_m2,
-	event_button_sel,
-	event_button_enable,
-  event_rot_left,
-  event_rot_right,
-  event_rot_left_set,
-  event_rot_right_set,
-	event_rot_press,
-	event_uart_rx,
-	event_ocp
-} event_t;
+void dps_emul_init(past_t *past, int argc, char const *argv[]);
 
-typedef enum {
-	press_short = 0,
-	press_long,
-} button_press_t;
-
-
-/**
-  * @brief Initialize the event module
-  * @retval None
-  */
-void event_init(void);
-
-/**
-  * @brief Fetch next event in queue
-  * @param event the type of event received or 'event_none' if no events in queue
-  * @param data additional event data
-  * @retval true if an event was found
-  */
-bool event_get(event_t *event, uint8_t *data);
-
-/**
-  * @brief Place event in event fifo
-  * @param event event type
-  * @param data additional event data
-  * @retval None
-  */
-bool event_put(event_t event, uint8_t data);
-
-/**
-  * @brief Get the number of items in the event buffer
-  * @retval the number of items in the event buffer
-  */
-uint32_t event_get_count();
-
-#endif // __EVENT_H__
+#endif // __DPSEMUL_H__

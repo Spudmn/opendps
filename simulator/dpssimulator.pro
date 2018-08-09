@@ -55,27 +55,24 @@ SOURCES += main.cpp\
     mock/dac_mock.c \
     flash.c \ 
     ../opendps/past.c \
+    ../opendps/event.c \
+    ringbuf.c \
+    ../opendps/uui.c \
+    ../opendps/func_cv.c \
+    ../opendps/uui_number.c \
+    
     
     #opendps_sim.c \
     #
     #spi_driver.c \
-    #
-    #
 
-    #../opendps/event.c \
-    #ringbuf.c \
-    #
-    #
-    #
-    #
-    #
     #../opendps/protocol_handler.c \
     #../opendps/protocol.c \
     #../opendps/crc16.c \
     #../opendps/bootcom.c \
-   	#../opendps/uui.c \
-	#../opendps/uui_number.c \
-	#../opendps/func_cv.c \
+   	#
+	#
+	#
 	#../opendps/uframe.c \
 	#../opendps/scpi_simu.c \
 	#../opendps/scpi_sour.c \
@@ -99,6 +96,8 @@ HEADERS  += mainwindow.h \
     mock/usart.h \
     mock/dac.h \
     flash.h \
+    ../opendps/past.h \
+    
     
     #../opendps/ili9163c.h \
     #../opendps/ili9163c_registers.h \
@@ -119,7 +118,7 @@ HEADERS  += mainwindow.h \
     #ringbuf.h \
     #
     #pwrctl.h \
-    #../opendps/past.h \
+    #
     #mock/nvic.h \
     #../opendps/serialhandler.h \
     #

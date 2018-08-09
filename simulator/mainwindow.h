@@ -51,12 +51,14 @@ private slots:
     void on_Dial_Load(int Value);
 
     void SysTick_Timeout();
+    void on_timer_Event();
 
 
 private:
     Ui::MainWindow *ui;
 
     QTimer *timer_SysTick;
+    QTimer *timer_Event;
 
     int m_argc;
     char **m_argv;
