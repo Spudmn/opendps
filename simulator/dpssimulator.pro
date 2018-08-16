@@ -18,6 +18,7 @@ INCLUDEPATH += mock \
 QMAKE_CC += -std=c99
 
 DEFINES += "CONFIG_DPS_MAX_CURRENT=5000"
+DEFINES += "CONFIG_DPS_MAX_VOLTAGE=32000"
 DEFINES += "dbg_printf=printf"
 DEFINES += "DPS5005"
 DEFINES += "DPS_EMULATOR"
@@ -34,8 +35,7 @@ DEFINES += "CONFIG_DEFAULT_ILIMIT=500"
 #LIBS += -L"C:\Users\aaron.keith\Documents\QT\ili9163c_LCD\third-party\scpi-parser\libscpi\dist" -lscpi
 
 
-LIBS += -lOpengl32 -lpthreadGC2 -lWs2_32 
-#LIBS +=  ../scpi-parser/libscpi/dist/libscpi.a
+LIBS += -lOpengl32 -lpthreadGC2 -lWs2_32 ../scpi-parser/libscpi/dist/libscpi.a
 
 SOURCES += main.cpp\
     mainwindow.cpp \
@@ -60,13 +60,24 @@ SOURCES += main.cpp\
     ../opendps/uui.c \
     ../opendps/func_cv.c \
     ../opendps/uui_number.c \
+    ../opendps/protocol_handler.c \
+    ../opendps/scpi_core.c \
+    ../opendps/scpi_simu.c \
+	../opendps/scpi_sour.c \
+	../opendps/scpi_meas.c \
+	../opendps/scpi_params.c \
+	../opendps/scpi_outp.c \
+	../opendps/scpi_syst.c \
+	../opendps/util.c \
+	../opendps/channel_dispatcher.c \
+    
     
     
     #opendps_sim.c \
     #
     #spi_driver.c \
 
-    #../opendps/protocol_handler.c \
+    #
     #../opendps/protocol.c \
     #../opendps/crc16.c \
     #../opendps/bootcom.c \
@@ -74,10 +85,7 @@ SOURCES += main.cpp\
 	#
 	#
 	#../opendps/uframe.c \
-	#../opendps/scpi_simu.c \
-	#../opendps/scpi_sour.c \
-	#../opendps/scpi_meas.c \
-	#../opendps/scpi_params.c \
+
 	#
 	
 	

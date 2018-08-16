@@ -59,6 +59,7 @@ extern "C" {
 #include "ili9163c_settings.h"
 #include "ili9163c_registers.h"
 #include "flash.h"
+#include "simulator.h"
 
 }
 
@@ -147,7 +148,11 @@ void MainWindow::on_timer_Event(void)
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-
+void mainwindow_exit()
+{
+  printf("simulator_exit!\n");
+  fMainWindow->close();
+}
 
 void mainwindow_processEvents()
 {

@@ -629,7 +629,7 @@ static void event_handler(void)
                     dbg_printf("Weird, should not receive 'none events'\n");
                     break;
                 case event_uart_rx:
-//                    serial_handle_rx_char(data);
+                    serial_handle_rx_char(data);
                     break;
                 case event_ocp:
                     break;
@@ -660,7 +660,7 @@ int main(int argc, char const *argv[])
 {
     hw_init();
     pwrctl_init(); // Must be after DAC init
-//    Init_Protocol_handler();
+    Init_Protocol_handler();
     event_init();
 
 #ifdef CONFIG_COMMANDLINE

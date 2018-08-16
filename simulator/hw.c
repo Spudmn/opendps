@@ -75,7 +75,7 @@ void Set_Fake_V_Out(uint32_t v_out)
   */
 void hw_init(void)
 {
-//  init_channel();  todo put back
+  init_channel();
 }
 
 /**

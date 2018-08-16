@@ -29,7 +29,7 @@
 #include "ringbuf.h"
 #include "event.h"
 
-#define MAX_EVENTS	(64)
+#define MAX_EVENTS	(512)
 
 static ringbuf_t events;
 static uint8_t buffer[2*MAX_EVENTS];
