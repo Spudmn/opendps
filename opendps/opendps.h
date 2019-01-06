@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "uui.h"
 
 /** Max number of parameters to a function */
 #define OPENDPS_MAX_PARAMETERS  (8)
@@ -108,7 +109,7 @@ void opendps_update_power_status(bool enabled);
   * @param status new wifi status
   * @retval none
   */
-void opendps_update_wifi_status(wifi_status_t status);
+//void opendps_update_wifi_status(wifi_status_t status);
 
 /**
   * @brief Handle ping
